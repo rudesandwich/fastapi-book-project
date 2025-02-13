@@ -12,7 +12,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker image
         run: |
-          docker build -t fastapi-app .
-          docker run -d -p 8000:8000 fastapi-app
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest
+
+      - name: Deploy Docker container
+        run: |
+          docker run -d -p 8000:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi-app:latest
