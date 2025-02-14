@@ -1,0 +1,19 @@
+version: '3'
+services:
+  fastapi:
+    build:
+      context: .
+      target: fastapi  # Build the FastAPI stage
+    ports:
+      - "8000:8000"    # Expose FastAPI on port 8000
+    restart: always
+
+  nginx:
+    build:
+      context: .
+      target: nginx    # Build the Nginx stage
+    ports:
+      - "80:80"        # Expose Nginx on port 80
+    depends_on:
+      - fastapi        # Ensure FastAPI starts before Nginx
+    restart: always
